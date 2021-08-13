@@ -16,10 +16,8 @@ app.use(express.json());
 app.get('/movies/:id', (req, res) => {
   // SQL query: SELECT * FROM movies WHERE id = <input> 
   let idParam = validID(req.params.id) 
-  if (!idParam) {
-    res.status(400).json({
-      message: `ID provided is invalid: received '${req.params.id}'`
-    })
+  if(!idParam) { // id not valid
+    res.status(400).send(`Invalid id: received ${req.params.id}`)
   } else {
     knex.select('*')
       .from('movies')
@@ -130,6 +128,32 @@ const validMovie = (movie) => {
   return false;
 }
 
+/**
+ * DELETE a movie from the db given an id
+ * @returns status 200 if the deletion was successful, with the response body conataining the info on the movie
+ * @returns status 400 if the id given is not a avalid id
+ * @returns status 404 if id is valid but no movie with that id is found
+ */
+app.delete('/movies/:id', (req, res) => {
+  // DELETE FROM movies WHERE id = <input> RETURNING *;
+  let idParam = validID(req.params.id);
+  if(!idParam) { // id not valid
+    res.status(400).send(`Invalid id: received ${req.params.id}`)
+  } else {
+    knex('movies')
+      .where({id: idParam})
+      .del('*')
+      .then(data => {
+        if(data.length === 0) {
+          res.status(404).send(`No movie with id ${idParam} found`)
+        } else {
+          res.status(200).json(data)
+        }
+      })
+      .catch(err => res.status(500).send(`Server error: ${err}`))
+
+  }
+})
 
 app.listen(PORT, () => {
   console.log(`The server is running on ${PORT}`);

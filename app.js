@@ -36,7 +36,6 @@ app.get('/movies/:id', (req, res) => {
         }));
   } 
 })
-
 /**
  * Validates a string to represent the ID
  * @param idStr a proposed string representing the ID int
@@ -60,24 +59,26 @@ app.get('/movies?', (req, res) => {
   // SQL query: SELECT * FROM movies WHERE title ILIKE %<input>%
   let titleQuery = req.query.title;
   if (!titleQuery) { // query not defined
+    titleQuery = '';
+    /*
     res.status(400).json({
       message: `titleQuery provided is invalid: received '${req.query.title}'`
     })
-  } else {
-    knex.select('*')
-      .from('movies')
-      .where('title', 'ILIKE', `%${titleQuery}%`)
-      .then(data => {
-        if(data.length === 0) {
-          throw new Error("no results");
-        }
-        res.status(200).json(data);
-      })
-      .catch(err => 
-        res.status(404).json({
-          message: `No movie with title containing '${titleQuery}' found`
-        }));
+    */
   }
+  knex.select('*')
+    .from('movies')
+    .where('title', 'ILIKE', `%${titleQuery}%`)
+    .then(data => {
+      if(data.length === 0) {
+        throw new Error("no results");
+      }
+      res.status(200).json(data);
+    })
+    .catch(err => 
+      res.status(404).json({
+        message: `No movie with title containing '${titleQuery}' found`
+      }));
 })
 
 /**
@@ -94,6 +95,40 @@ app.get('/movies', function(req, res) {
           'The data you are looking for could not be found. Please try again'
       }));
 });
+
+
+/**
+ * POST a new movie to the db
+ * @returns status 200 if the insertion was successful into the DB
+ * @returns status 400 if the given movie is not valid
+ * @returns status 500 if the insertion fails
+ */
+app.post('/movies', (req, res) => {
+  console.log(req.body);
+  let newMovie = validMovie(req.body);
+  if(!newMovie) {
+    res.status(400).send(`Invalid movie: received ${JSON.stringify(req.body)}`);
+  } else {
+    // INSERT INTO movies (title, runtime, release_year, director) VALUES (<input>)
+    knex('movies').insert(newMovie)
+      .then(data => res.status(200).json(data))
+      .catch(err => res.status(500).send(`Server error: ${err}`));
+  }
+})
+/**
+ * Validates a given movie
+ * @param {*} movie the movie to be validated. Contains keys title, runtime, release_year, and director.
+ * @returns true if there is a title and is valid; all other field optional but must be valid if present.
+ */
+const validMovie = (movie) => {
+  if(movie.title && typeof movie.title === 'string' &&
+     (!movie.runtime || typeof movie.runtime === 'number') &&
+     (!movie.release_year || typeof movie.release_year === 'number') &&
+     (!movie.director || typeof movie.director === 'string')) {
+    return movie;
+  }
+  return false;
+}
 
 
 app.listen(PORT, () => {

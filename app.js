@@ -37,7 +37,12 @@ app.get('/movies/:id', (req, res) => {
   } 
 })
 
-const validID = (idStr) => { // let idStr = 3.2
+/**
+ * Validates a string to represent the ID
+ * @param idStr a proposed string representing the ID int
+ * @returns a valid int ID, or false if the input was not a valid ID string
+ */
+const validID = (idStr) => {
   if(idStr) { // idStr not defined or empty
     let parsed = parseInt(idStr);
     if(parsed) { // parsed is not NaN

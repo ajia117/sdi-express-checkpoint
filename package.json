@@ -1,0 +1,27 @@
+{
+  "name": "sdi-express-checkpoint",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ajia117/sdi-express-checkpoint.git"
+  },
+  "author": "Hector Hernandez and Andre Jia",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ajia117/sdi-express-checkpoint/issues"
+  },
+  "homepage": "https://github.com/ajia117/sdi-express-checkpoint#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "knex": "^0.21.21",
+    "pg": "^8.7.1"
+  },
+  "devDependencies": {
+    "eslint": "^7.32.0"
+  }
+}

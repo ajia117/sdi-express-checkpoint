@@ -5,6 +5,10 @@ Config:
  - It should have default username "postgres" and password "docker". 
  - It will have the database "express_cp" where the data will be stored. 
 
+Build seed db: 
+ - run <code>npx knex migration:latest</code>
+ - run <code>npx knex seed:run</code>
+
 
 User Stories: 
  - As a client application consuming your api application,
